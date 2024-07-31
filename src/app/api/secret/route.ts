@@ -1,9 +1,10 @@
-import { redirect } from "next/navigation";
 
-export async function GET(request: Request) {
+import { NextRequest } from "next/server";
+
+export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const key = url.searchParams.get("key");
-
+ 
   if (!key) {
     return new Response(
       JSON.stringify({ error: "Key parameter is required" }),

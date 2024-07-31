@@ -1,5 +1,5 @@
 "use client";
-
+import { WebSocet } from "ws";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -14,17 +14,19 @@ export default function Home({
     if (searchParams.key === undefined) {
       redirect("/404");
     }
-    const ws = new WebSocket(
-      `ws://localhost:3000?key=${encodeURIComponent(searchParams.key)}`
-    );
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setMessage(data.key);
-    };
+    const ws = new WebSocket(`ws://localhost:3001`);
 
     ws.onopen = () => {
       console.log("WebSocket connection opened");
+      const interval = setInterval(() => {
+        ws.send(JSON.stringify(searchParams.key));
+      }, 5000);
+    };
+
+    ws.onmessage = (event) => {
+      // const data = JSON.parse(event.data);
+      // setMessage(data.key);
+      console.log("hello", event.data);
     };
 
     ws.onclose = () => {
@@ -35,9 +37,9 @@ export default function Home({
       console.error("WebSocket error:", error);
     };
 
-    return () => {
-      ws.close();
-    };
+    // return () => {
+    //   ws.close();
+    // };
   }, [searchParams.key]);
 
   return (
